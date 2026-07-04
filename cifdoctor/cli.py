@@ -37,8 +37,8 @@ def main(paths, fmt, fix):
                 with open(cif_path, "w") as f:
                     f.write(str(cf))
                 fixed_files.append(str(cif_path))
-            except Exception:
-                pass
+            except Exception as exc:  # noqa: BLE001 - report, don't hide, fix failures
+                click.echo(f"WARNING: --fix failed for {cif_path}: {exc}", err=True)
 
     if fmt == 'json':
         emit_json(findings, fixed_files)
