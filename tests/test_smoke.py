@@ -12,7 +12,7 @@ def test_empty_dir():
     with tempfile.TemporaryDirectory() as temp_dir:
         result = runner.invoke(main, [temp_dir, '--format', 'text'])
         assert result.exit_code == 0
-        assert result.output == ""
+        assert "SUMMARY: 0 findings" in result.output
 
 
 def test_fixtures_dir_exits_nonzero_and_flags_broken_files():

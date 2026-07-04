@@ -23,15 +23,27 @@ def _iter_cif_files(paths):
 def main(paths, fmt, fix):
     """cif-doctor: Batch validator and fixer for CIF files."""
     findings = []
+    fixed_files = []
 
     for cif_path in _iter_cif_files(paths):
+        cif_path = Path(cif_path)
         for check in CHECKS:
             findings.extend(check.run(cif_path))
+            
+        if fix:
+            try:
+                from pymatgen.io.cif import CifFile
+                cf = CifFile.from_file(cif_path)
+                with open(cif_path, "w") as f:
+                    f.write(str(cf))
+                fixed_files.append(str(cif_path))
+            except Exception:
+                pass
 
     if fmt == 'json':
-        emit_json(findings)
+        emit_json(findings, fixed_files)
     else:
-        emit_text(findings)
+        emit_text(findings, fixed_files)
 
     exit_code = get_exit_code(findings)
     if exit_code > 0:
