@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from cifdoctor.checks import parse_health, occupancy, charge, bonds
+from cifdoctor.checks import parse_health, occupancy, charge, bonds, symmetry
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -75,3 +75,40 @@ def test_bonds_flags_short_contact_as_warning():
     severities = _severities(findings)
     assert "error" not in severities
     assert "warning" in severities
+
+
+def test_symmetry_consistent_file_has_no_findings():
+    # clean.cif declares P 1 with a single 'x, y, z' op and no IT number:
+    # nothing contradicts, so the check is silent.
+    findings = symmetry.run(FIXTURES / "clean.cif")
+    assert _severities(findings, "symmetry") == []
+
+
+def test_symmetry_flags_symbol_number_mismatch_as_error():
+    findings = symmetry.run(FIXTURES / "sym_mismatch_number.cif")
+    sym = [f for f in findings if f.check_name == "symmetry"]
+    assert "error" in [f.severity for f in sym]
+    assert any("No." in f.message for f in sym if f.severity == "error")
+
+
+def test_symmetry_flags_unrecognized_symbol_as_warning():
+    findings = symmetry.run(FIXTURES / "sym_bad_symbol.cif")
+    sym = [f for f in findings if f.check_name == "symmetry"]
+    assert [f.severity for f in sym] == ["warning"]
+    assert "unrecognized space group symbol" in sym[0].message
+
+
+def test_symmetry_flags_too_many_operations_as_error():
+    findings = symmetry.run(FIXTURES / "sym_too_many_ops.cif")
+    sym = [f for f in findings if f.check_name == "symmetry"]
+    assert "error" in [f.severity for f in sym]
+    assert any("more than" in f.message for f in sym if f.severity == "error")
+
+
+def test_symmetry_flags_generators_only_as_warning():
+    findings = symmetry.run(FIXTURES / "sym_generators_only.cif")
+    sym = [f for f in findings if f.check_name == "symmetry"]
+    assert "error" not in [f.severity for f in sym]
+    assert any(
+        f.severity == "warning" and "generators only" in f.message for f in sym
+    )

@@ -16,13 +16,14 @@ Given one or more `.cif` files (or a directory), produce a per-file report:
 - **Bond-length sanity** — nearest-neighbor distances vs. covalent-radii
   expectations; flag collisions and impossible contacts
   (`cifdoctor/checks/bonds.py`)
+- **Symmetry metadata** — cross-checks the declared space group against itself:
+  the H-M symbol vs. the International Tables number vs. the count of
+  `_symmetry_equiv_pos_as_xyz` operations (error on a symbol/number contradiction
+  or too many ops; warning on an unrecognized symbol or a generators-only op
+  list). Declared metadata only — **under**-declaring symmetry (all atoms in
+  `P 1`) is legal CIF and is never flagged (`cifdoctor/checks/symmetry.py`)
 - `--fix` applies safe, loss-free normalizations only (whitespace, tag case,
   deterministic ordering); everything else is report-only
-
-**Not yet implemented:** a symmetry check (declared space group vs. atom
-positions consistency) was in the original spec but has no module and isn't
-registered in `cli.py`'s `CHECKS` list — track it as a follow-up task rather
-than assuming it runs.
 
 ## Usage
 
