@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from cifdoctor.checks import parse_health, occupancy
+from cifdoctor.checks import parse_health, occupancy, charge, bonds
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -37,3 +37,41 @@ def test_occupancy_flags_partial_site_as_info():
     severities = _severities(findings)
     assert "error" not in severities
     assert "info" in severities
+
+
+def test_charge_neutral_file_has_no_warnings():
+    findings = charge.run(FIXTURES / "charge_neutral.cif")
+    severities = _severities(findings)
+    assert "warning" not in severities
+    assert "error" not in severities
+
+
+def test_charge_flags_imbalanced_composition():
+    findings = charge.run(FIXTURES / "charge_imbalanced.cif")
+    assert "warning" in _severities(findings)
+    assert any("net cell charge" in f.message for f in findings)
+
+
+def test_charge_skips_with_info_when_states_absent():
+    findings = charge.run(FIXTURES / "clean.cif")
+    severities = _severities(findings)
+    assert severities == ["info"]
+    assert "skipping" in findings[0].message
+
+
+def test_bonds_clean_file_has_no_findings():
+    findings = bonds.run(FIXTURES / "clean.cif")
+    assert findings == []
+
+
+def test_bonds_flags_impossible_contact_as_error():
+    findings = bonds.run(FIXTURES / "close_contact.cif")
+    assert "error" in _severities(findings)
+    assert any("impossible contact" in f.message for f in findings if f.severity == "error")
+
+
+def test_bonds_flags_short_contact_as_warning():
+    findings = bonds.run(FIXTURES / "short_contact.cif")
+    severities = _severities(findings)
+    assert "error" not in severities
+    assert "warning" in severities
