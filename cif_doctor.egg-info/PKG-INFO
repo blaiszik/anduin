@@ -1,0 +1,9 @@
+Metadata-Version: 2.4
+Name: cif-doctor
+Version: 0.1.0
+Summary: Batch validator and fixer for CIF files
+Requires-Python: >=3.11
+Requires-Dist: pymatgen>=2023.0.0
+Requires-Dist: click>=8.0.0
+Provides-Extra: test
+Requires-Dist: pytest>=7.0.0; extra == "test"

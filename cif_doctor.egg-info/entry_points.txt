@@ -1,0 +1,2 @@
+[console_scripts]
+cif-doctor = cifdoctor.cli:main

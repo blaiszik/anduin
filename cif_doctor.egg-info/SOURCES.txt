@@ -1,0 +1,13 @@
+README.md
+pyproject.toml
+cif_doctor.egg-info/PKG-INFO
+cif_doctor.egg-info/SOURCES.txt
+cif_doctor.egg-info/dependency_links.txt
+cif_doctor.egg-info/entry_points.txt
+cif_doctor.egg-info/requires.txt
+cif_doctor.egg-info/top_level.txt
+cifdoctor/__init__.py
+cifdoctor/cli.py
+cifdoctor/report.py
+cifdoctor/checks/__init__.py
+tests/test_smoke.py

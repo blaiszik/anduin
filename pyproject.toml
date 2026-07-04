@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cif-doctor"
+version = "0.1.0"
+description = "Batch validator and fixer for CIF files"
+requires-python = ">=3.11"
+dependencies = [
+    "pymatgen>=2023.0.0",
+    "click>=8.0.0"
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=7.0.0"
+]
+
+[project.scripts]
+cif-doctor = "cifdoctor.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

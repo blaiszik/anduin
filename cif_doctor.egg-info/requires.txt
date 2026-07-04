@@ -1,0 +1,5 @@
+pymatgen>=2023.0.0
+click>=8.0.0
+
+[test]
+pytest>=7.0.0
